@@ -6,42 +6,34 @@ import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.os.Bundle;
 import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import dev.lfspersson.a4all.models.ItemListModel;
-import dev.lfspersson.a4all.adapters.MyAdapter;
 import dev.lfspersson.a4all.R;
+import dev.lfspersson.a4all.models.ItemListModel;
+import dev.lfspersson.a4all.models.ItemModel;
 import dev.lfspersson.a4all.network.RestService;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
-@EActivity(R.layout.activity_main)
-public class MainActivity extends AppCompatActivity {
-
-    private List<String> itemList;
+@EActivity(R.layout.activity_item_detail)
+public class ItemDetailActivity extends AppCompatActivity {
+    private String itemId;
+    private ItemModel item;
     private ProgressDialog progressDialog;
 
-    private RecyclerView recyclerView;
-    private MyAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-
-    @ViewById
-    RecyclerView rvList;
-
     @AfterViews
-    void init() {
+    void init(){
+        itemId = (String) getIntent().getSerializableExtra("itemId");
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         startDialog();
 
@@ -54,14 +46,14 @@ public class MainActivity extends AppCompatActivity {
     @Background
     public void callRestService() {
         RestService service = RestService.retrofit.create(RestService.class);
-        final Call<ItemListModel> call = service.getList();
+        final Call<ItemModel> call = service.getItem(itemId);
 
-        call.enqueue(new Callback<ItemListModel>() {
+        call.enqueue(new Callback<ItemModel>() {
             @Override
-            public void onResponse(Response<ItemListModel> response, Retrofit retrofit) {
-                itemList = new ArrayList<String>();
-                itemList = response.body().getLista();
-                loadList();
+            public void onResponse(Response<ItemModel> response, Retrofit retrofit) {
+                item = response.body();
+                Toast.makeText(getApplicationContext(), item.getTitulo(), Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
             }
 
             @Override
@@ -73,28 +65,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startDialog() {
-        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog = new ProgressDialog(ItemDetailActivity.this);
         progressDialog.setMessage("Buscando");//getResources().getString(R.string.msg_getting_articles));
         progressDialog.setTitle("aguarde");//getResources().getString(R.string.msg_wait));
         progressDialog.show();
     }
 
     private boolean isConnectedToInternet() {
-        ConnectivityManager cm = (ConnectivityManager) MainActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) ItemDetailActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork == null) {
-            Toast.makeText(MainActivity.this, "sem internet"/*R.string.msg_no_internet*/, Toast.LENGTH_LONG).show();
+            Toast.makeText(ItemDetailActivity.this, "sem internet"/*R.string.msg_no_internet*/, Toast.LENGTH_LONG).show();
             return false;
         } else
             return true;
-    }
-
-    private void loadList() {
-        mLayoutManager = new LinearLayoutManager(this);
-        rvList.setLayoutManager(mLayoutManager);
-
-        mAdapter = new MyAdapter(itemList, getApplicationContext());
-        rvList.setAdapter(mAdapter);
-        progressDialog.dismiss();
     }
 }

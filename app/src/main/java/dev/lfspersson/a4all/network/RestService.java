@@ -7,6 +7,8 @@ import retrofit.Call;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.http.GET;
+import retrofit.http.PATCH;
+import retrofit.http.Path;
 
 /**
  * Created by LFSPersson on 17/11/16.
@@ -16,8 +18,8 @@ public interface RestService {
     @GET("/tarefa/")
     Call<ItemListModel> getList();
 
-    @GET("/tarefa/1")
-    Call<ItemModel> getTasks();
+    @GET("/tarefa/{itemId}")
+    Call<ItemModel> getItem(@Path("itemId") String itemId);
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BuildConfig.API_END_POINT)
