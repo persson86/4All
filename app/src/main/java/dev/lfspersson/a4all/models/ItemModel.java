@@ -1,4 +1,4 @@
-package dev.lfspersson.a4all;
+package dev.lfspersson.a4all.models;
 
 import com.google.gson.annotations.SerializedName;
 

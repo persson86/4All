@@ -1,4 +1,4 @@
-package dev.lfspersson.a4all;
+package dev.lfspersson.a4all.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,8 +7,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import dev.lfspersson.a4all.R;
 
 /**
  * Created by LFSPersson on 18/11/16.

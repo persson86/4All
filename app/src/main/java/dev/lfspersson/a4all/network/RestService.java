@@ -1,10 +1,9 @@
-package dev.lfspersson.a4all;
+package dev.lfspersson.a4all.network;
 
-import java.util.List;
-import java.util.Map;
-
+import dev.lfspersson.a4all.BuildConfig;
+import dev.lfspersson.a4all.models.ItemListModel;
+import dev.lfspersson.a4all.models.ItemModel;
 import retrofit.Call;
-import retrofit.Callback;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.http.GET;

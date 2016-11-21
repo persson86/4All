@@ -1,4 +1,4 @@
-package dev.lfspersson.a4all;
+package dev.lfspersson.a4all.activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -6,13 +6,8 @@ import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
@@ -22,8 +17,11 @@ import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import dev.lfspersson.a4all.models.ItemListModel;
+import dev.lfspersson.a4all.adapters.MyAdapter;
+import dev.lfspersson.a4all.R;
+import dev.lfspersson.a4all.network.RestService;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;

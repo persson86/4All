@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
     android:background="#ff0000"
-    tools:context="dev.lfspersson.a4all.MainActivity">
+    tools:context="dev.lfspersson.a4all.activities.MainActivity">
 
 <android.support.v7.widget.RecyclerView
     android:id="@+id/rvList"
