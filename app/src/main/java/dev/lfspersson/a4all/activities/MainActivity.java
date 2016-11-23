@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.lfspersson.a4all.models.ItemListModel;
-import dev.lfspersson.a4all.adapters.MyAdapter;
+import dev.lfspersson.a4all.adapters.ItemListAdapter;
 import dev.lfspersson.a4all.R;
 import dev.lfspersson.a4all.network.RestService;
 import retrofit.Call;
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
 
     private RecyclerView recyclerView;
-    private MyAdapter mAdapter;
+    private ItemListAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
     @ViewById
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         rvList.setLayoutManager(mLayoutManager);
 
-        mAdapter = new MyAdapter(itemList, getApplicationContext());
+        mAdapter = new ItemListAdapter(itemList, getApplicationContext());
         rvList.setAdapter(mAdapter);
         progressDialog.dismiss();
     }

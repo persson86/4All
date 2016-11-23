@@ -2,6 +2,8 @@ package dev.lfspersson.a4all.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
  * Created by LFSPersson on 17/11/16.
  */
@@ -29,7 +31,8 @@ public class ItemModel {
     private String latitude;
     @SerializedName("longitude")
     private String longitude;
-    //comentarios <-----
+    @SerializedName("comentarios")
+    private List<ItemComentarioModel> comentariosList;
 
     public ItemModel() {
     }
@@ -120,5 +123,13 @@ public class ItemModel {
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+
+    public List<ItemComentarioModel> getComentariosList() {
+        return comentariosList;
+    }
+
+    public void setComentariosList(List<ItemComentarioModel> comentariosList) {
+        this.comentariosList = comentariosList;
     }
 }

@@ -7,16 +7,24 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -37,8 +45,12 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import dev.lfspersson.a4all.R;
+import dev.lfspersson.a4all.adapters.ComentarioAdapter;
+import dev.lfspersson.a4all.adapters.ItemListAdapter;
+import dev.lfspersson.a4all.models.ItemComentarioModel;
 import dev.lfspersson.a4all.models.ItemListModel;
 import dev.lfspersson.a4all.models.ItemModel;
 import dev.lfspersson.a4all.network.RestService;
@@ -52,6 +64,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     private String itemId;
     private ItemModel item;
     private ProgressDialog progressDialog;
+    private ComentarioAdapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
     private GoogleMap mMap;
 
     @ViewById
@@ -68,9 +82,13 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     TextView tvTexto;
     @ViewById
     TextView tvEndereco;
+    //@ViewById
+    //RecyclerView rvComentarios;
+    @ViewById
+    LinearLayout llComentarios;
 
     @AfterViews
-    void init(){
+    void init() {
         itemId = (String) getIntent().getSerializableExtra("itemId");
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -158,13 +176,32 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
                 .into(imageView);
     }
 
-    private void showProgressBarImages(){
+    public void loadFotoComentario(String url, ImageView imageView) {
+        Glide.with(imageView.getContext())
+                .load(url)
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        //pbFoto.setVisibility(View.GONE);
+                        //ivFoto.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+                })
+                .into(imageView);
+    }
+
+    private void showProgressBarImages() {
         progressDialog.dismiss();
         pbFoto.setVisibility(View.VISIBLE);
         pbLogo.setVisibility(View.VISIBLE);
     }
 
-    private void loadInfoScreen(){
+    private void loadInfoScreen() {
         loadFotoImage(item.getUrlFoto(), ivFoto);
         loadLogoImage(item.getUrlLogo(), ivLogo);
 
@@ -175,8 +212,11 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
         tvTitulo.setText(item.getTitulo());
         tvTexto.setText(item.getTexto());
         tvEndereco.setText(item.getEndereco());
+
+        loadComentarios();
     }
 
+    //Mapa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -188,23 +228,75 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
         }
     }
 
-    private void initCamera( double lat, double lng ) {
+    private void initCamera(double lat, double lng) {
         CameraPosition position = CameraPosition.builder()
-                .target( new LatLng( lat, lng ) )
-                .zoom( 15.7f )
-                .bearing( 0.0f )
-                .tilt( 0.0f )
+                .target(new LatLng(lat, lng))
+                .zoom(15.7f)
+                .bearing(0.0f)
+                .tilt(0.0f)
                 .build();
 
-        mMap.animateCamera( CameraUpdateFactory
-                .newCameraPosition( position ), null );
-        mMap.setMapType( GoogleMap.MAP_TYPE_TERRAIN );
+        mMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(position), null);
+        mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
 
         LatLng latLng = new LatLng(lat, lng);
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
-        markerOptions.title(item.getCidade());
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+        markerOptions.title(item.getEndereco());
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.img_pinpoint));
+        //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
         mMap.addMarker(markerOptions);
+    }
+
+    public void loadComentarios() {
+/*        mLayoutManager = new LinearLayoutManager(this);
+        rvComentarios.setLayoutManager(mLayoutManager);
+
+        List<ItemComentarioModel> comentarioList = item.getComentariosList();
+
+        mAdapter = new ComentarioAdapter(comentarioList, getApplicationContext());
+        rvComentarios.setAdapter(mAdapter);*/
+        //------------
+
+        List<ItemComentarioModel> comentarioList = item.getComentariosList();
+
+        for (ItemComentarioModel comentario : comentarioList) {
+            LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+            View inflatedLayout = inflater.inflate(R.layout.comentario_row, null, false);
+
+            TextView tvComentarioNome = (TextView) inflatedLayout.findViewById(R.id.tvComentarioNome);
+            TextView tvComentarioTitulo = (TextView) inflatedLayout.findViewById(R.id.tvComentarioTitulo);
+            TextView tvComentarioComentario = (TextView) inflatedLayout.findViewById(R.id.tvComentarioComentario);
+            ImageView ivComentarioFoto = (ImageView) inflatedLayout.findViewById(R.id.ivComentarioFoto);
+            ImageView ivComentarioNota = (ImageView) inflatedLayout.findViewById(R.id.ivComentarioNota);
+
+            tvComentarioNome.setText(comentario.getNome());
+            tvComentarioTitulo.setText(comentario.getTitulo());
+            tvComentarioComentario.setText(comentario.getComentario());
+            loadFotoComentario(comentario.getUrlFoto(), ivComentarioFoto);
+
+            switch (comentario.getNota()){
+                case "1":
+                    ivComentarioNota.setImageResource(R.drawable.img_star_nota1);
+                    break;
+                case "2":
+                    ivComentarioNota.setImageResource(R.drawable.img_star_nota2);
+                    break;
+                case "3":
+                    ivComentarioNota.setImageResource(R.drawable.img_star_nota3);
+                    break;
+                case "4":
+                    ivComentarioNota.setImageResource(R.drawable.img_star_nota4);
+                    break;
+                case "5":
+                    ivComentarioNota.setImageResource(R.drawable.img_star_nota5);
+                    break;
+            }
+
+            llComentarios.addView(inflatedLayout);
+        }
+
+        progressDialog.dismiss();
     }
 }

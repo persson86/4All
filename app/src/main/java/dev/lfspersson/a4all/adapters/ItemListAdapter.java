@@ -2,27 +2,23 @@ package dev.lfspersson.a4all.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
 import dev.lfspersson.a4all.R;
-import dev.lfspersson.a4all.activities.ItemDetailActivity;
 import dev.lfspersson.a4all.activities.ItemDetailActivity_;
-import dev.lfspersson.a4all.activities.MainActivity;
 
 /**
  * Created by LFSPersson on 18/11/16.
  */
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ViewHolder> {
     private List<String> items;
     private Context context;
 
@@ -39,14 +35,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
     }
 
-    public MyAdapter(List<String> myDataset, Context c) {
+    public ItemListAdapter(List<String> myDataset, Context c) {
         items = myDataset;
         context = c;
     }
 
     @Override
-    public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
+    public ItemListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                         int viewType) {
         LayoutInflater inflater = LayoutInflater.from(
                 parent.getContext());
         View v =
