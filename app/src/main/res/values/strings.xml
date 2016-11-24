@@ -2,4 +2,6 @@
     <string name="app_name">4All</string>
     <string name="txt_id">Id:</string>
     <string name="title_activity_maps">Map</string>
+    <string name="tit_servicos">Serviços</string>
+    <string name="tit_endereco">Endereço:</string>
 </resources>

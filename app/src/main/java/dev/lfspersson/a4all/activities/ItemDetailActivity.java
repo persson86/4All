@@ -1,9 +1,13 @@
 package dev.lfspersson.a4all.activities;
 
+import android.Manifest;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,17 +15,24 @@ import android.graphics.Color;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
@@ -41,6 +52,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
@@ -48,7 +60,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.lfspersson.a4all.R;
-import dev.lfspersson.a4all.adapters.ComentarioAdapter;
 import dev.lfspersson.a4all.adapters.ItemListAdapter;
 import dev.lfspersson.a4all.models.ItemComentarioModel;
 import dev.lfspersson.a4all.models.ItemListModel;
@@ -64,9 +75,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     private String itemId;
     private ItemModel item;
     private ProgressDialog progressDialog;
-    private ComentarioAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
     private GoogleMap mMap;
+    private Context context;
 
     @ViewById
     ImageView ivFoto;
@@ -82,14 +92,15 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     TextView tvTexto;
     @ViewById
     TextView tvEndereco;
-    //@ViewById
-    //RecyclerView rvComentarios;
     @ViewById
     LinearLayout llComentarios;
+    @ViewById
+    ScrollView svScreen;
 
     @AfterViews
     void init() {
         itemId = (String) getIntent().getSerializableExtra("itemId");
+        context = getApplicationContext();
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         startDialog();
@@ -250,15 +261,6 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     public void loadComentarios() {
-/*        mLayoutManager = new LinearLayoutManager(this);
-        rvComentarios.setLayoutManager(mLayoutManager);
-
-        List<ItemComentarioModel> comentarioList = item.getComentariosList();
-
-        mAdapter = new ComentarioAdapter(comentarioList, getApplicationContext());
-        rvComentarios.setAdapter(mAdapter);*/
-        //------------
-
         List<ItemComentarioModel> comentarioList = item.getComentariosList();
 
         for (ItemComentarioModel comentario : comentarioList) {
@@ -276,7 +278,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
             tvComentarioComentario.setText(comentario.getComentario());
             loadFotoComentario(comentario.getUrlFoto(), ivComentarioFoto);
 
-            switch (comentario.getNota()){
+            switch (comentario.getNota()) {
                 case "1":
                     ivComentarioNota.setImageResource(R.drawable.img_star_nota1);
                     break;
@@ -298,5 +300,61 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
         }
 
         progressDialog.dismiss();
+    }
+
+    @Click
+    void ivServicos() {
+        ServicosActivity_.intent(context).flags(Intent.FLAG_ACTIVITY_NEW_TASK).start();
+    }
+
+    @Click
+    void ivLigar() {
+        onCall();
+    }
+
+    @Click
+    void ivEndereco() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                ItemDetailActivity.this);
+        builder.setTitle(getString(R.string.tit_endereco));
+        builder.setMessage(item.getEndereco());
+        builder.setPositiveButton("Ok!", null);
+        builder.show();
+    }
+
+    @Click
+    void ivComentarios(){
+        svScreen.post(new Runnable() { public void run() { svScreen.fullScroll(View.FOCUS_DOWN); } });
+    }
+
+    public void onCall() {
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE);
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.CALL_PHONE},
+                    1);
+        } else {
+            Intent it = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + item.getTelefone()));
+            startActivity(it);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+
+            case 1:
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    onCall();
+                } else {
+                    Log.d("TAG", "Call Permission Not Granted");
+                }
+                break;
+
+            default:
+                break;
+        }
     }
 }
