@@ -19,15 +19,19 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -54,6 +58,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
@@ -102,6 +107,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
         itemId = (String) getIntent().getSerializableExtra("itemId");
         context = getApplicationContext();
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         startDialog();
 
@@ -109,6 +116,22 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
             callRestService();
         else
             Toast.makeText(this, "SEM CONEXÃO", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Background
@@ -213,6 +236,9 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     private void loadInfoScreen() {
+        //getSupportActionBar().setTitle(item.getCidade() + item.getBairro());
+        //getSupportActionBar().setTitle(R.layout.custom_actionbar);
+
         loadFotoImage(item.getUrlFoto(), ivFoto);
         loadLogoImage(item.getUrlLogo(), ivLogo);
 
@@ -227,7 +253,6 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
         loadComentarios();
     }
 
-    //Mapa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -255,8 +280,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title(item.getEndereco());
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.img_pinpoint));
-        //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
         mMap.addMarker(markerOptions);
     }
 
@@ -323,8 +347,12 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     @Click
-    void ivComentarios(){
-        svScreen.post(new Runnable() { public void run() { svScreen.fullScroll(View.FOCUS_DOWN); } });
+    void ivComentarios() {
+/*        svScreen.post(new Runnable() {
+            public void run() {*/
+                svScreen.fullScroll(View.FOCUS_DOWN);
+            //}
+  //      });
     }
 
     public void onCall() {

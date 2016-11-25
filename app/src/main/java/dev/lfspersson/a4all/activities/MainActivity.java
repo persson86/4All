@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         startDialog();
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
         if (isConnectedToInternet() == true)
             callRestService();
         else
