@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:textAllCaps="true"
                 android:textColor="@color/colorPrimary"
-                android:textSize="28sp" />
+                android:textSize="24sp" />
 
         </RelativeLayout>
         <!--Box-->
@@ -144,13 +144,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorAccent"
-                android:textSize="18sp" />
+                android:textSize="14sp" />
 
         </LinearLayout>
         <!--Mapa-->
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="110dp"
+            android:layout_height="match_parent"
             android:background="@android:color/white">
 
             <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -161,7 +161,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="15dp"
+                android:layout_height="match_parent"
                 android:layout_below="@id/map"
                 android:background="@color/colorPrimary"
                 android:orientation="horizontal">
@@ -170,8 +170,9 @@
                     android:id="@+id/tvEndereco"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="right"
+                    android:gravity="right|center_vertical"
                     android:paddingRight="10dp"
+                    android:textSize="12dp"
                     android:textColor="@android:color/white" />
             </LinearLayout>
 
@@ -183,6 +184,6 @@
             android:layout_height="wrap_content"
             android:background="@android:color/white"
             android:orientation="vertical"
-            android:paddingTop="5dp"></LinearLayout>
+            android:paddingTop="0dp"></LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -103,13 +103,14 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     ScrollView svScreen;
     @ViewById
     TextView tvToolbarTitle;
+    @ViewById
+    Toolbar toolbar;
 
     @AfterViews
     void init() {
         itemId = (String) getIntent().getSerializableExtra("itemId");
         context = getApplicationContext();
 
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         loadToolbar();
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -122,22 +123,9 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     private void loadToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        // Sets the Toolbar to act as the ActionBar for this Activity window.
-        // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-       /* setSupportActionBar(tb);
-
-        // Get the ActionBar here to configure the way it behaves.
-        final ActionBar ab = getSupportActionBar();
-        //ab.setHomeAsUpIndicator(R.drawable.ic_menu); // set a custom icon for the default home button
-        ab.setDisplayShowHomeEnabled(true); // show or hide the default home button
-        ab.setDisplayHomeAsUpEnabled(true);
-        ab.setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
-        ab.setDisplayShowTitleEnabled(false); // disable the default title element here (for centered title)*/
     }
 
     @Override
@@ -171,7 +159,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
 
             @Override
             public void onFailure(Throwable t) {
-                Toast.makeText(getApplicationContext(), t.getMessage().toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, t.getMessage().toString(), Toast.LENGTH_LONG).show();
                 progressDialog.dismiss();
             }
         });
@@ -179,8 +167,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
 
     private void startDialog() {
         progressDialog = new ProgressDialog(ItemDetailActivity.this);
-        progressDialog.setMessage("Buscando");//getResources().getString(R.string.msg_getting_articles));
-        progressDialog.setTitle("aguarde");//getResources().getString(R.string.msg_wait));
+        progressDialog.setMessage(getResources().getString(R.string.msg_buscando));
+        progressDialog.setTitle(getResources().getString(R.string.msg_aguarde));
         progressDialog.show();
     }
 
@@ -188,7 +176,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
         ConnectivityManager cm = (ConnectivityManager) ItemDetailActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork == null) {
-            Toast.makeText(ItemDetailActivity.this, "sem internet"/*R.string.msg_no_internet*/, Toast.LENGTH_LONG).show();
+            Toast.makeText(ItemDetailActivity.this, R.string.msg_no_internet, Toast.LENGTH_LONG).show();
             return false;
         } else
             return true;
@@ -235,19 +223,6 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     public void loadFotoComentario(String url, ImageView imageView) {
         Glide.with(imageView.getContext())
                 .load(url)
-                .listener(new RequestListener<String, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        //pbFoto.setVisibility(View.GONE);
-                        //ivFoto.setVisibility(View.VISIBLE);
-                        return false;
-                    }
-                })
                 .into(imageView);
     }
 
@@ -258,9 +233,6 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     private void loadInfoScreen() {
-        //getSupportActionBar().setTitle(item.getCidade() + item.getBairro());
-        //getSupportActionBar().setTitle(R.layout.custom_actionbar);
-
         tvToolbarTitle.setText(item.getCidade() + " - " + item.getBairro());
 
         loadFotoImage(item.getUrlFoto(), ivFoto);
@@ -312,7 +284,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
         List<ItemComentarioModel> comentarioList = item.getComentariosList();
 
         for (ItemComentarioModel comentario : comentarioList) {
-            LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+            LayoutInflater inflater = LayoutInflater.from(context);
             View inflatedLayout = inflater.inflate(R.layout.comentario_row, null, false);
 
             TextView tvComentarioNome = (TextView) inflatedLayout.findViewById(R.id.tvComentarioNome);
@@ -357,7 +329,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
 
     @Click
     void ivLigar() {
-        onCall();
+        execActionCall();
     }
 
     @Click
@@ -366,20 +338,16 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
                 ItemDetailActivity.this);
         builder.setTitle(getString(R.string.tit_endereco));
         builder.setMessage(item.getEndereco());
-        builder.setPositiveButton("Ok!", null);
+        builder.setPositiveButton(R.string.msg_ok, null);
         builder.show();
     }
 
     @Click
     void ivComentarios() {
-/*        svScreen.post(new Runnable() {
-            public void run() {*/
         svScreen.fullScroll(View.FOCUS_DOWN);
-        //}
-        //      });
     }
 
-    public void onCall() {
+    public void execActionCall() {
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE);
 
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -399,7 +367,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
 
             case 1:
                 if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    onCall();
+                    execActionCall();
                 } else {
                     Log.d("TAG", "Call Permission Not Granted");
                 }
