@@ -101,13 +101,16 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     LinearLayout llComentarios;
     @ViewById
     ScrollView svScreen;
+    @ViewById
+    TextView tvToolbarTitle;
 
     @AfterViews
     void init() {
         itemId = (String) getIntent().getSerializableExtra("itemId");
         context = getApplicationContext();
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        loadToolbar();
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         startDialog();
@@ -116,6 +119,25 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
             callRestService();
         else
             Toast.makeText(this, "SEM CONEXÃO", Toast.LENGTH_SHORT).show();
+    }
+
+    private void loadToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the toolbar exists in the activity and is not null
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+       /* setSupportActionBar(tb);
+
+        // Get the ActionBar here to configure the way it behaves.
+        final ActionBar ab = getSupportActionBar();
+        //ab.setHomeAsUpIndicator(R.drawable.ic_menu); // set a custom icon for the default home button
+        ab.setDisplayShowHomeEnabled(true); // show or hide the default home button
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
+        ab.setDisplayShowTitleEnabled(false); // disable the default title element here (for centered title)*/
     }
 
     @Override
@@ -239,6 +261,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
         //getSupportActionBar().setTitle(item.getCidade() + item.getBairro());
         //getSupportActionBar().setTitle(R.layout.custom_actionbar);
 
+        tvToolbarTitle.setText(item.getCidade() + " - " + item.getBairro());
+
         loadFotoImage(item.getUrlFoto(), ivFoto);
         loadLogoImage(item.getUrlLogo(), ivLogo);
 
@@ -350,9 +374,9 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     void ivComentarios() {
 /*        svScreen.post(new Runnable() {
             public void run() {*/
-                svScreen.fullScroll(View.FOCUS_DOWN);
-            //}
-  //      });
+        svScreen.fullScroll(View.FOCUS_DOWN);
+        //}
+        //      });
     }
 
     public void onCall() {
