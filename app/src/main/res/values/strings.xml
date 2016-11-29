@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">4All</string>
-    <string name="txt_id">Id:</string>
     <string name="tit_servicos">Serviços</string>
     <string name="tit_endereco">Endereço:</string>
+    <string name="tit_lista">4All - teste mobile #1</string>
     <string name="msg_buscando">Buscando</string>
     <string name="msg_aguarde">aguarde...</string>
     <string name="msg_no_internet">Sem acesso a Internet</string>

@@ -1,8 +1,11 @@
-package dev.lfspersson.a4all.models;
+package dev.lfspersson.a4all.database.models;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+
+import io.realm.RealmList;
+import io.realm.RealmObject;
 
 /**
  * Created by LFSPersson on 18/11/16.
@@ -14,9 +17,5 @@ public class ItemListModel {
 
     public List<String> getLista() {
         return lista;
-    }
-
-    public void setLista(List<String> lista) {
-        this.lista = lista;
     }
 }

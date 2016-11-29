@@ -1,12 +1,14 @@
-package dev.lfspersson.a4all.models;
+package dev.lfspersson.a4all.database.models;
 
 import com.google.gson.annotations.SerializedName;
+
+import io.realm.RealmObject;
 
 /**
  * Created by LFSPersson on 23/11/16.
  */
 
-public class ItemComentarioModel {
+public class ItemComentarioModel extends RealmObject{
     @SerializedName("urlFoto")
     private String urlFoto;
     @SerializedName("nome")

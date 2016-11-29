@@ -1,13 +1,12 @@
 package dev.lfspersson.a4all.network;
 
 import dev.lfspersson.a4all.BuildConfig;
-import dev.lfspersson.a4all.models.ItemListModel;
-import dev.lfspersson.a4all.models.ItemModel;
+import dev.lfspersson.a4all.database.models.ItemListModel;
+import dev.lfspersson.a4all.database.models.ItemModel;
 import retrofit.Call;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.http.GET;
-import retrofit.http.PATCH;
 import retrofit.http.Path;
 
 /**

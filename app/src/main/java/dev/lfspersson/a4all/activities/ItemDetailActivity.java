@@ -1,34 +1,19 @@
 package dev.lfspersson.a4all.activities;
 
 import android.Manifest;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,8 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.LinearLayout.LayoutParams;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -55,25 +38,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import dev.lfspersson.a4all.R;
-import dev.lfspersson.a4all.adapters.ItemListAdapter;
-import dev.lfspersson.a4all.models.ItemComentarioModel;
-import dev.lfspersson.a4all.models.ItemListModel;
-import dev.lfspersson.a4all.models.ItemModel;
-import dev.lfspersson.a4all.network.RestService;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import dev.lfspersson.a4all.database.dao.ItemDAO;
+import dev.lfspersson.a4all.database.models.ItemComentarioModel;
+import dev.lfspersson.a4all.database.models.ItemModel;
 
 @EActivity(R.layout.activity_item_detail)
 public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -82,6 +57,9 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     private ProgressDialog progressDialog;
     private GoogleMap mMap;
     private Context context;
+
+    @Bean
+    ItemDAO itemDAO;
 
     @ViewById
     ImageView ivFoto;
@@ -116,10 +94,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         startDialog();
 
-        if (isConnectedToInternet() == true)
-            callRestService();
-        else
-            Toast.makeText(this, "SEM CONEXÃO", Toast.LENGTH_SHORT).show();
+        showProgressBarImages();
+        loadInfoScreen();
     }
 
     private void loadToolbar() {
@@ -144,42 +120,11 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
         return super.onOptionsItemSelected(item);
     }
 
-    @Background
-    public void callRestService() {
-        RestService service = RestService.retrofit.create(RestService.class);
-        final Call<ItemModel> call = service.getItem(itemId);
-
-        call.enqueue(new Callback<ItemModel>() {
-            @Override
-            public void onResponse(Response<ItemModel> response, Retrofit retrofit) {
-                item = response.body();
-                showProgressBarImages();
-                loadInfoScreen();
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                Toast.makeText(context, t.getMessage().toString(), Toast.LENGTH_LONG).show();
-                progressDialog.dismiss();
-            }
-        });
-    }
-
     private void startDialog() {
         progressDialog = new ProgressDialog(ItemDetailActivity.this);
         progressDialog.setMessage(getResources().getString(R.string.msg_buscando));
         progressDialog.setTitle(getResources().getString(R.string.msg_aguarde));
         progressDialog.show();
-    }
-
-    private boolean isConnectedToInternet() {
-        ConnectivityManager cm = (ConnectivityManager) ItemDetailActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        if (activeNetwork == null) {
-            Toast.makeText(ItemDetailActivity.this, R.string.msg_no_internet, Toast.LENGTH_LONG).show();
-            return false;
-        } else
-            return true;
     }
 
     public void loadFotoImage(String url, ImageView imageView) {
@@ -233,6 +178,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     private void loadInfoScreen() {
+        item = itemDAO.getItemById(itemId);
+
         tvToolbarTitle.setText(item.getCidade() + " - " + item.getBairro());
 
         loadFotoImage(item.getUrlFoto(), ivFoto);
@@ -247,37 +194,6 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
         tvEndereco.setText(item.getEndereco());
 
         loadComentarios();
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        if (item.getLatitude() != null) {
-            double lat = Double.parseDouble(item.getLatitude());
-            double lng = Double.parseDouble(item.getLongitude());
-            initCamera(lat, lng);
-        }
-    }
-
-    private void initCamera(double lat, double lng) {
-        CameraPosition position = CameraPosition.builder()
-                .target(new LatLng(lat, lng))
-                .zoom(15.7f)
-                .bearing(0.0f)
-                .tilt(0.0f)
-                .build();
-
-        mMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(position), null);
-        mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-
-        LatLng latLng = new LatLng(lat, lng);
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title(item.getEndereco());
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-        mMap.addMarker(markerOptions);
     }
 
     public void loadComentarios() {
@@ -320,6 +236,37 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
         }
 
         progressDialog.dismiss();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        if (item.getLatitude() != null) {
+            double lat = Double.parseDouble(item.getLatitude());
+            double lng = Double.parseDouble(item.getLongitude());
+            initCamera(lat, lng);
+        }
+    }
+
+    private void initCamera(double lat, double lng) {
+        CameraPosition position = CameraPosition.builder()
+                .target(new LatLng(lat, lng))
+                .zoom(15.7f)
+                .bearing(0.0f)
+                .tilt(0.0f)
+                .build();
+
+        mMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(position), null);
+        mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+
+        LatLng latLng = new LatLng(lat, lng);
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title(item.getEndereco());
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+        mMap.addMarker(markerOptions);
     }
 
     @Click
