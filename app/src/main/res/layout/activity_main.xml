@@ -4,7 +4,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
+    android:background="#F2F2F2"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="dev.lfspersson.a4all.activities.MainActivity">
@@ -34,8 +34,8 @@
         android:id="@+id/rvList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin_custom"
+        android:paddingRight="@dimen/activity_horizontal_margin_custom"
         android:paddingTop="@dimen/activity_vertical_margin"></android.support.v7.widget.RecyclerView>
 
 </LinearLayout>

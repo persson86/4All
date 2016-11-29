@@ -1,5 +1,6 @@
 package dev.lfspersson.a4all.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import dev.lfspersson.a4all.R;
 import dev.lfspersson.a4all.activities.ItemDetailActivity_;
+import dev.lfspersson.a4all.activities.MainActivity;
 import dev.lfspersson.a4all.database.models.ItemModel;
 
 /**
@@ -25,6 +27,7 @@ import dev.lfspersson.a4all.database.models.ItemModel;
 public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ViewHolder> {
     private List<ItemModel> items;
     private Context context;
+    private Activity activity;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView ivFotoItem;
@@ -45,9 +48,10 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ViewHo
         }
     }
 
-    public ItemListAdapter(List<ItemModel> myDataset, Context c) {
+    public ItemListAdapter(List<ItemModel> myDataset, Context c, Activity a) {
         items = myDataset;
         context = c;
+        activity = a;
     }
 
     @Override
@@ -74,6 +78,7 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ViewHo
             @Override
             public void onClick(View v) {
                 ItemDetailActivity_.intent(context).flags(Intent.FLAG_ACTIVITY_NEW_TASK).extra("itemId", id).start();
+                activity.overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
             }
         });
     }

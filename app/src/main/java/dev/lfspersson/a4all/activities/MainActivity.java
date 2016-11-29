@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         rvList.setLayoutManager(mLayoutManager);
 
-        mAdapter = new ItemListAdapter(itemModelList, context);
+        mAdapter = new ItemListAdapter(itemModelList, context, this);
         rvList.setAdapter(mAdapter);
         progressDialog.dismiss();
     }
