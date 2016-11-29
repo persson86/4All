@@ -22,6 +22,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField 'String', 'API_END_POINT', '"http://dev.4all.com:3003/"'
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -47,6 +48,7 @@ dependencies {
     compile 'com.google.android.gms:play-services:9.6.1'
     testCompile 'junit:junit:4.12'
     apt 'org.androidannotations:androidannotations:3.3.2'
+    compile 'com.android.support:multidex:1.0.1'
 }
 
 apt {
