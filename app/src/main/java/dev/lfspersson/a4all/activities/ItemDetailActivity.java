@@ -130,8 +130,8 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
 
     private void startDialog() {
         progressDialog = new ProgressDialog(ItemDetailActivity.this);
-        progressDialog.setMessage(getResources().getString(R.string.msg_buscando));
-        progressDialog.setTitle(getResources().getString(R.string.msg_aguarde));
+        progressDialog.setMessage(getResources().getString(R.string.msg_aguarde));
+        progressDialog.setTitle(getResources().getString(R.string.msg_buscando));
         progressDialog.show();
     }
 
@@ -280,6 +280,7 @@ public class ItemDetailActivity extends AppCompatActivity implements OnMapReadyC
     @Click
     void ivServicos() {
         ServicosActivity_.intent(context).flags(Intent.FLAG_ACTIVITY_NEW_TASK).start();
+        overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
     }
 
     @Click

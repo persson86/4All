@@ -146,8 +146,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void startDialog() {
         progressDialog = new ProgressDialog(MainActivity.this);
-        progressDialog.setMessage(getResources().getString(R.string.msg_buscando));
-        progressDialog.setTitle(getResources().getString(R.string.msg_aguarde));
+        progressDialog.setMessage(getResources().getString(R.string.msg_aguarde));
+        progressDialog.setTitle(getResources().getString(R.string.msg_buscando));
         progressDialog.show();
     }
 
